@@ -12,12 +12,11 @@ require 'vendor/autoload.php';
 
 const ICON = '50B0CD10-4D52-4898-9C05-DD3A34A829C3.png';
 const LIMIT = 10;
+const ENDPOINT = "https://musicbrainz.org";
+const SEARCH_PATH = ENDPOINT . "/search";
 
 $workflow = new Workflow();
 $workflow->logger()->setPrefix('DEBUG');
-
-$endpoint = "https://musicbrainz.org";
-$search_path = $endpoint . "/search";
 
 $query = $workflow->env('query');
 $type = $workflow->env('type');
@@ -28,12 +27,12 @@ $type = $workflow->env('type');
 
 // parse and handle two types of search
 // 1. (Default) Input is read from previous search and selecting type correctly
-if ($query === null) {
+if ($query === null || $type === null) {
     // 2. Call this directly and provide raw query as "mbs [type] [query]
     // such as `mbs artist artist="pink floyd" AND country=US`.
     // In this type, $query and $type would be null and $raw_query is non-null
     // TODO: parse the raw string
-    $type = "release";
+    $type = "artist";
     $query = $raw_query;
 }
 
@@ -45,7 +44,7 @@ if ($query === null) {
 $brainz = new MusicBrainz(new GuzzleHttpAdapter(new Client()));
 $brainz->setUserAgent('Musicbrainz Alfred workflow', '1.0', 'me@ivanxiao.com');
 
-$path = $endpoint . "/$type";
+$path = ENDPOINT . "/$type";
 if ($type === "artist") {
     $args = array(
         "artist" => $query,
@@ -66,6 +65,7 @@ if ($type === "artist") {
             ->copy($name)
             ->icon(ICON)
             ->cmd(fn($mod) => $mod->subtitle($result->getScore())) // Cmd to show score
+            ->action($id) // Pass id to Universal Action so that it can be searched
             ->quickLookUrl($url);
     }
 } else if ($type === "release") {
@@ -90,6 +90,7 @@ if ($type === "artist") {
             ->autocomplete($title)
             ->copy($title)
             ->icon(ICON)
+            ->action($id)
             ->quickLookUrl($url);
     }
 }
@@ -97,7 +98,7 @@ if ($type === "artist") {
 // Add search url
 $params = array('query' => $query, 'type' => $type);
 $query_string = http_build_query($params);
-$search_url = $search_path . '?' . $query_string;
+$search_url = SEARCH_PATH . '?' . $query_string;
 $workflow->item()
     ->title("Search MusicBrainz for '$query'")
     ->subtitle($type)
