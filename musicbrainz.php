@@ -23,7 +23,7 @@ $type = $workflow->env('type');
 
 # for debug
 // $raw_query = "pink floyd AND country=US";
-// $raw_query = "世纪青年招待所";
+// $raw_query = "旅行团";
 
 // parse and handle two types of search
 // 1. (Default) Input is read from previous search and selecting type correctly
@@ -53,18 +53,32 @@ if ($type === "artist") {
     $results = $brainz->search($filter, LIMIT);
 
     foreach ($results as $result) {
+        // Generate descriptive title, this should look like 
+        // Artist Name (primary alias1, primary alias2, ..., dismbiguation)
         $name = $result->getName();
-        $result_type = $result->getType();
+        $disambiguation = $result->disambiguation;
+        $title = $name;
+        $primary_aliases = array_filter($result->getAliases(), function ($a) {
+            $primary = $a["primary"] ?? false;
+            return $primary;
+        });
+        $primary_alias_names = array_map(fn($a) => $a['name'], $primary_aliases);
+        $primary_alias_str = implode(', ', $primary_alias_names);
+        $desc = implode(', ', array_filter([$primary_alias_str, $disambiguation]));
+        if (!empty($desc)) {
+            $title = $title . " ($desc)";
+        }
+
         $id = $result->getId();
         $url = $path . "/$id";
         $workflow->item()
-            ->title("$name ($result_type)")
+            ->title($title)
             ->subtitle($id)
             ->arg($url)
             ->autocomplete($name)
             ->copy($name)
             ->icon(ICON)
-            ->cmd(fn($mod) => $mod->subtitle($result->getScore())) // Cmd to show score
+            ->cmd(fn($mod) => $mod->subtitle("Score: " . $result->getScore())) // Cmd to show score
             ->action($id) // Pass id to Universal Action so that it can be searched
             ->quickLookUrl($url);
     }
