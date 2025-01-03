@@ -1,0 +1,15 @@
+{
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/Users/ivanxiao/local/MusicBrainz",
+            "options": {
+                "symlink": false
+            }
+        }
+    ],
+    "require": {
+        "joetannenbaum/alfred-workflow": "^1.1",
+        "iveney/musicbrainz-php": "dev-master"
+    }
+}
