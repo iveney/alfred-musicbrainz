@@ -18,12 +18,12 @@ const SEARCH_PATH = ENDPOINT . "/search";
 $workflow = new Workflow();
 $workflow->logger()->setPrefix('DEBUG');
 
-$query = $workflow->env('query');
-$type = $workflow->env('type');
+$query = $query ?? $workflow->env('query');
+$type = $type ?? $workflow->env('type');
 
 # for debug
 // $raw_query = "pink floyd AND country=US";
-$raw_query = "旅行团";
+// $raw_query = "旅行团";
 
 // parse and handle two types of search
 // 1. (Default) Input is read from previous search and selecting type correctly
