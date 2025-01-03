@@ -1,11 +1,8 @@
 {
     "repositories": [
         {
-            "type": "path",
-            "url": "/Users/ivanxiao/local/MusicBrainz",
-            "options": {
-                "symlink": false
-            }
+            "type": "vcs",
+            "url": "https://github.com/iveney/MusicBrainz.git"
         }
     ],
     "require": {

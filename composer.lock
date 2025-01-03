@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8700c96529c729d686825f0cdfd4192b",
+    "content-hash": "740e936bd381a104a95ff3447645eee7",
     "packages": [
         {
             "name": "guzzlehttp/guzzle",
@@ -334,13 +334,19 @@
         {
             "name": "iveney/musicbrainz-php",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/iveney/MusicBrainz.git",
+                "reference": "c3edde7af0b039df398e9d12514ebfe3ee2bafb6"
+            },
             "dist": {
-                "type": "path",
-                "url": "/Users/ivanxiao/local/MusicBrainz",
-                "reference": "790b5069ec65d1beafb594f8d99a35faba3a337f"
+                "type": "zip",
+                "url": "https://api.github.com/repos/iveney/MusicBrainz/zipball/c3edde7af0b039df398e9d12514ebfe3ee2bafb6",
+                "reference": "c3edde7af0b039df398e9d12514ebfe3ee2bafb6",
+                "shasum": ""
             },
             "require": {
-                "guzzlehttp/guzzle": ">=7.0",
+                "guzzlehttp/guzzle": "^7.9",
                 "php": ">=8.0"
             },
             "require-dev": {
@@ -350,6 +356,7 @@
                 "guzzle/guzzle": "Allows you to use the GuzzleHttpAdapter. You must install one of the supported adapters.",
                 "rmccue/requests": "Allows you to use the RequestsHttpAdapter. You must install one of the supported adapters."
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-0": {
@@ -387,10 +394,16 @@
                 "musicbrainz",
                 "php"
             ],
-            "transport-options": {
-                "symlink": false,
-                "relative": false
-            }
+            "support": {
+                "source": "https://github.com/iveney/MusicBrainz/tree/dev"
+            },
+            "funding": [
+                {
+                    "type": "github",
+                    "url": "https://github.com/mikealmond"
+                }
+            ],
+            "time": "2025-01-03T00:59:44+00:00"
         },
         {
             "name": "joetannenbaum/alfred-workflow",
