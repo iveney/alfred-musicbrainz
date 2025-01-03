@@ -23,7 +23,7 @@ $type = $workflow->env('type');
 
 # for debug
 // $raw_query = "pink floyd AND country=US";
-// $raw_query = "旅行团";
+$raw_query = "旅行团";
 
 // parse and handle two types of search
 // 1. (Default) Input is read from previous search and selecting type correctly
@@ -92,14 +92,18 @@ if ($type === "artist") {
     foreach ($results as $result) {
         $title = $result->title;
         $date = $result->date;
+        if (empty($date)) {
+            $date = "[no date]";
+        }
         $artist_names = array_map(fn($artist) => $artist->name, $result->artists);
         $labels = array_map(fn($label) => $label->name, $result->labels);
         $label_names = implode(", ", $labels);
+        $trackCount = $result->trackCount;
         $id = $result->id;
         $url = $path . "/$id";
         $workflow->item()
-            ->title("$title - $date - $label_names")
-            ->subtitle(implode(", ", $artist_names))
+            ->title(implode(", ", $artist_names) . " - $title")
+            ->subtitle("$date, $label_names, $trackCount tracks")
             ->arg($url)
             ->autocomplete($title)
             ->copy($title)
