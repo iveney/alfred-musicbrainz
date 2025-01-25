@@ -4,6 +4,8 @@
 use Alfred\Workflows\Workflow;
 use GuzzleHttp\Client;
 use MusicBrainz\Artist;
+use MusicBrainz\Release;
+use MusicBrainz\ReleaseGroup;
 use MusicBrainz\Tag;
 use MusicBrainz\Label;
 use MusicBrainz\Filters\ArtistFilter;
@@ -15,7 +17,7 @@ use MusicBrainz\MusicBrainz;
 require 'vendor/autoload.php';
 
 const ICON = '50B0CD10-4D52-4898-9C05-DD3A34A829C3.png';
-const LIMIT = 10;
+const LIMIT = 15;
 const ENDPOINT = "https://musicbrainz.org";
 const SEARCH_PATH = ENDPOINT . "/search";
 
@@ -60,6 +62,10 @@ if ($type === "artist") {
     $results = $brainz->search($filter, LIMIT);
 
     foreach ($results as $result) {
+        if (!$result instanceof Artist) {
+            $workflow->logger()->info("Cast error");
+            continue;
+        }
         // Generate descriptive title, this should look like 
         // Artist Name (primary alias1, primary alias2, ..., dismbiguation)
         $name = $result->getName();
@@ -93,6 +99,10 @@ if ($type === "artist") {
     $results = $brainz->search($filter, LIMIT);
 
     foreach ($results as $result) {
+        if (!$result instanceof Release) {
+            $workflow->logger()->info("Cast error");
+            continue;
+        }
         $releaseTitle = $result->title;
         $artistNames = Artist::arrayToString($result->artists);
         $title = "$artistNames - $releaseTitle";
@@ -127,7 +137,10 @@ if ($type === "artist") {
     $results = $brainz->search($filter, LIMIT);
 
     foreach ($results as $result) {
-        // var_dump($result);
+        if (!$result instanceof ReleaseGroup) {
+            $workflow->logger()->info("Cast error");
+            continue;
+        }
         $title = $result->getTitle();
         $artistNames = Artist::arrayToString($result->getArtists());
         $firstReleaseDate = $result->getFirstReleaseDate();
