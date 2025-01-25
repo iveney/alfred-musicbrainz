@@ -133,7 +133,7 @@
 				<key>fixedorder</key>
 				<false/>
 				<key>items</key>
-				<string>[{"title":"artist","arg":"artist"},{"title":"release","arg":"release"}]</string>
+				<string>[{"title":"artist","arg":"artist"},{"title":"release","arg":"release"},{"title":"release group","arg":"release-group","subtitle":""}]</string>
 				<key>matchmode</key>
 				<integer>0</integer>
 				<key>runningsubtext</key>

@@ -5,6 +5,7 @@ use Alfred\Workflows\Workflow;
 use GuzzleHttp\Client;
 use MusicBrainz\Filters\ArtistFilter;
 use MusicBrainz\Filters\ReleaseFilter;
+use MusicBrainz\Filters\ReleaseGroupFilter;
 use MusicBrainz\HttpAdapters\GuzzleHttpAdapter;
 use MusicBrainz\MusicBrainz;
 
@@ -21,9 +22,12 @@ $workflow->logger()->setPrefix('DEBUG');
 $query = $query ?? $workflow->env('query');
 $type = $type ?? $workflow->env('type');
 
+// Can also run as script using env variables, e.g.,
+// query="Highway to hell" type="release" php musicbrainz.php | jq
+
 # for debug
 // $raw_query = "pink floyd AND country=US";
-// $raw_query = "旅行团";
+// $raw_query = "Highway to hell";
 
 // parse and handle two types of search
 // 1. (Default) Input is read from previous search and selecting type correctly
@@ -95,15 +99,52 @@ if ($type === "artist") {
         if (empty($date)) {
             $date = "[no date]";
         }
-        $artist_names = array_map(fn($artist) => $artist->name, $result->artists);
+        $artistNames = array_map(fn($artist) => $artist->name, $result->artists);
         $labels = array_map(fn($label) => $label->name, $result->labels);
         $label_names = implode(", ", $labels);
         $trackCount = $result->trackCount;
         $id = $result->id;
         $url = $path . "/$id";
         $workflow->item()
-            ->title(implode(", ", $artist_names) . " - $title")
+            ->title(implode(", ", $artistNames) . " - $title")
             ->subtitle("$date, $label_names, $trackCount tracks")
+            ->arg($url)
+            ->autocomplete($title)
+            ->copy($title)
+            ->icon(ICON)
+            ->action($id)
+            ->quickLookUrl($url);
+    }
+} else if ($type === "release-group") {
+    $args = array(
+        "releasegroup" => $query,
+    );
+    $filter = new ReleaseGroupFilter($args);
+    $results = $brainz->search($filter, LIMIT);
+
+    foreach ($results as $result) {
+        // var_dump($result);
+        $title = $result->getTitle();
+        $artists = $result->getArtists();
+        $artistNames = array_map(fn($artist) => $artist->name, $artists);
+        $firstReleaseDate = $result->getFirstReleaseDate();
+        $id = $result->id;
+        $url = $path . "/$id";
+
+        // addtional info for subtitle
+        $numReleases = $result->getCount();
+        $tagCounts = array_map(fn($tag) => "$tag->name ($tag->count)", $result->getTags());
+        $tagCountsStr = implode(", ", $tagCounts);
+
+        $subtitles = [
+            $result->getPrimaryType(),
+            "$numReleases releases",
+            $tagCountsStr,
+        ];
+
+        $workflow->item()
+            ->title(implode(", ", $artistNames) . " - $title ($firstReleaseDate)")
+            ->subtitle(implode(" | ", array_filter($subtitles)))
             ->arg($url)
             ->autocomplete($title)
             ->copy($title)
@@ -114,7 +155,9 @@ if ($type === "artist") {
 }
 
 // Add search url
-$params = array('query' => $query, 'type' => $type);
+// Note that for release-group, the search type is underscore, while URL uses dash
+$query_type = $type === "release-group" ? "release_group" : $type;
+$params = array('query' => $query, 'type' => $query_type);
 $query_string = http_build_query($params);
 $search_url = SEARCH_PATH . '?' . $query_string;
 $workflow->item()
