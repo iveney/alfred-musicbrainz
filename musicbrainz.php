@@ -3,6 +3,9 @@
 
 use Alfred\Workflows\Workflow;
 use GuzzleHttp\Client;
+use MusicBrainz\Artist;
+use MusicBrainz\Tag;
+use MusicBrainz\Label;
 use MusicBrainz\Filters\ArtistFilter;
 use MusicBrainz\Filters\ReleaseFilter;
 use MusicBrainz\Filters\ReleaseGroupFilter;
@@ -62,13 +65,9 @@ if ($type === "artist") {
         $name = $result->getName();
         $disambiguation = $result->disambiguation;
         $title = $name;
-        $primary_aliases = array_filter($result->getAliases(), function ($a) {
-            $primary = $a["primary"] ?? false;
-            return $primary;
-        });
-        $primary_alias_names = array_map(fn($a) => $a['name'], $primary_aliases);
-        $primary_alias_str = implode(', ', $primary_alias_names);
-        $desc = implode(', ', array_filter([$primary_alias_str, $disambiguation]));
+
+        $primaryAliases = $result->getPrimaryAliasesString();
+        $desc = implode(', ', array_filter([$primaryAliases, $disambiguation]));
         if (!empty($desc)) {
             $title = $title . " ($desc)";
         }
@@ -94,22 +93,27 @@ if ($type === "artist") {
     $results = $brainz->search($filter, LIMIT);
 
     foreach ($results as $result) {
-        $title = $result->title;
-        $date = $result->date;
-        if (empty($date)) {
-            $date = "[no date]";
+        $releaseTitle = $result->title;
+        $artistNames = Artist::arrayToString($result->artists);
+        $title = "$artistNames - $releaseTitle";
+        if (!empty($result->date)) {
+            $title .= " ($result->date)";
         }
-        $artistNames = array_map(fn($artist) => $artist->name, $result->artists);
-        $labels = array_map(fn($label) => $label->name, $result->labels);
-        $label_names = implode(", ", $labels);
+
+        $labels = Label::arrayToString($result->labels);
         $trackCount = $result->trackCount;
+        $subtitle = implode(" | ", array_filter([
+            $labels, 
+            "$trackCount tracks",
+        ]));
+
         $id = $result->id;
         $url = $path . "/$id";
         $workflow->item()
-            ->title(implode(", ", $artistNames) . " - $title")
-            ->subtitle("$date, $label_names, $trackCount tracks")
+            ->title($title)
+            ->subtitle($subtitle)
             ->arg($url)
-            ->autocomplete($title)
+            ->autocomplete($releaseTitle)
             ->copy($title)
             ->icon(ICON)
             ->action($id)
@@ -125,25 +129,23 @@ if ($type === "artist") {
     foreach ($results as $result) {
         // var_dump($result);
         $title = $result->getTitle();
-        $artists = $result->getArtists();
-        $artistNames = array_map(fn($artist) => $artist->name, $artists);
+        $artistNames = Artist::arrayToString($result->getArtists());
         $firstReleaseDate = $result->getFirstReleaseDate();
         $id = $result->id;
         $url = $path . "/$id";
 
         // addtional info for subtitle
         $numReleases = $result->getCount();
-        $tagCounts = array_map(fn($tag) => "$tag->name ($tag->count)", $result->getTags());
-        $tagCountsStr = implode(", ", $tagCounts);
+        $tags = Tag::arrayToString($result->getTags());
 
         $subtitles = [
             $result->getPrimaryType(),
             "$numReleases releases",
-            $tagCountsStr,
+            $tags,
         ];
 
         $workflow->item()
-            ->title(implode(", ", $artistNames) . " - $title ($firstReleaseDate)")
+            ->title("$artistNames - $title ($firstReleaseDate)")
             ->subtitle(implode(" | ", array_filter($subtitles)))
             ->arg($url)
             ->autocomplete($title)
