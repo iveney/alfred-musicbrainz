@@ -1,0 +1,40 @@
+# Alfred Workflow for MusicBrainz
+
+Leverages:
+
+1. [PHP Workflows package](https://www.alfredphpworkflows.com/)
+2. [PHP package for MusicBrainz](https://github.com/iveney/MusicBrainz.git)
+
+## Improving MusicBrainz package
+Some modification is needed to use the MusicBrainz package for newer version of PHP (see fork).
+
+Original package also lacks many fields, my fork fixes some, but not complete. To develop this together, recommend this workflow:
+
+1. Clone the remote repo
+2. Install the package via a dev `composer.json`. Run `COMPOSER=composer.dev.json composer install`
+3. Modify MusicBrainz package directly inside the alfredworkflow. Since it's symlinked, any change will update to the local repo as well.
+4. Once it's done, push `MusicBrainz` to remote and use regular `composer.json`
+
+```
+# composer.dev.json
+{
+    "repositories": [
+        {
+            "type": "path",
+            "url": "/Path/to/local/MusicBrainz",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "require": {
+        "joetannenbaum/alfred-workflow": "^1.1",
+        "iveney/musicbrainz-php": "dev-master"
+    }
+}
+
+```
+
+
+## How to test
+Test via alfred workflow or run as script
