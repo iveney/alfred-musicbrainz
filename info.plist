@@ -34,6 +34,19 @@
 				<false/>
 			</dict>
 		</array>
+		<key>3A20AC2A-30E1-495C-973C-9BB27F793D77</key>
+		<array>
+			<dict>
+				<key>destinationuid</key>
+				<string>857A83B5-A097-4609-90F1-78F6870F1FDA</string>
+				<key>modifiers</key>
+				<integer>0</integer>
+				<key>modifiersubtext</key>
+				<string></string>
+				<key>vitoclose</key>
+				<false/>
+			</dict>
+		</array>
 		<key>50B0CD10-4D52-4898-9C05-DD3A34A829C3</key>
 		<array>
 			<dict>
@@ -505,6 +518,80 @@ require_once('musicbrainz.php');</string>
 			<key>version</key>
 			<integer>3</integer>
 		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>alfredfiltersresults</key>
+				<false/>
+				<key>alfredfiltersresultsmatchmode</key>
+				<integer>0</integer>
+				<key>argumenttreatemptyqueryasnil</key>
+				<true/>
+				<key>argumenttrimmode</key>
+				<integer>0</integer>
+				<key>argumenttype</key>
+				<integer>0</integer>
+				<key>escaping</key>
+				<integer>100</integer>
+				<key>keyword</key>
+				<string>mbg</string>
+				<key>queuedelaycustom</key>
+				<integer>3</integer>
+				<key>queuedelayimmediatelyinitially</key>
+				<true/>
+				<key>queuedelaymode</key>
+				<integer>0</integer>
+				<key>queuemode</key>
+				<integer>1</integer>
+				<key>runningsubtext</key>
+				<string>Searching MusicBrainz...</string>
+				<key>script</key>
+				<string>$query = "{query}";
+$type = "release-group";
+$raw_query = $query;
+
+require_once('musicbrainz.php');</string>
+				<key>scriptargtype</key>
+				<integer>0</integer>
+				<key>scriptfile</key>
+				<string></string>
+				<key>subtext</key>
+				<string></string>
+				<key>title</key>
+				<string>Search Release Group in MusicBrainz</string>
+				<key>type</key>
+				<integer>1</integer>
+				<key>withspace</key>
+				<true/>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.input.scriptfilter</string>
+			<key>uid</key>
+			<string>3A20AC2A-30E1-495C-973C-9BB27F793D77</string>
+			<key>version</key>
+			<integer>3</integer>
+		</dict>
+		<dict>
+			<key>config</key>
+			<dict>
+				<key>browser</key>
+				<string></string>
+				<key>skipqueryencode</key>
+				<false/>
+				<key>skipvarencode</key>
+				<false/>
+				<key>spaces</key>
+				<string></string>
+				<key>url</key>
+				<string>{query}</string>
+			</dict>
+			<key>type</key>
+			<string>alfred.workflow.action.openurl</string>
+			<key>uid</key>
+			<string>857A83B5-A097-4609-90F1-78F6870F1FDA</string>
+			<key>version</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 	<key>readme</key>
 	<string>Alfred's Script Filter object is extremely powerful, and gives you control over the results displayed in Alfred.
@@ -535,6 +622,13 @@ If the result set is static, use the "Alfred filters results" option. This allow
 			<key>ypos</key>
 			<real>430</real>
 		</dict>
+		<key>3A20AC2A-30E1-495C-973C-9BB27F793D77</key>
+		<dict>
+			<key>xpos</key>
+			<real>30</real>
+			<key>ypos</key>
+			<real>875</real>
+		</dict>
 		<key>50B0CD10-4D52-4898-9C05-DD3A34A829C3</key>
 		<dict>
 			<key>xpos</key>
@@ -552,6 +646,13 @@ If the result set is static, use the "Alfred filters results" option. This allow
 			<real>225</real>
 			<key>ypos</key>
 			<real>275</real>
+		</dict>
+		<key>857A83B5-A097-4609-90F1-78F6870F1FDA</key>
+		<dict>
+			<key>xpos</key>
+			<real>240</real>
+			<key>ypos</key>
+			<real>875</real>
 		</dict>
 		<key>8C0508F8-934C-41FF-BEC4-BE2B037714E7</key>
 		<dict>
