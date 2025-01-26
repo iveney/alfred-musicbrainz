@@ -6,6 +6,8 @@ use GuzzleHttp\Client;
 use MusicBrainz\HttpAdapters\GuzzleHttpAdapter;
 use MusicBrainz\MusicBrainz;
 use MusicBrainz\Release;
+use MusicBrainz\Artist;
+use MusicBrainz\Label;
 
 require 'vendor/autoload.php';
 
@@ -20,6 +22,7 @@ $workflow->logger()->setPrefix('DEBUG');
 $brainz = new MusicBrainz(new GuzzleHttpAdapter(new Client()));
 $brainz->setUserAgent('Musicbrainz Alfred workflow', '1.0', 'me@ivanxiao.com');
 
+$query = $query ?? $workflow->env('query');
 $mbid = $query;
 
 $includes = array('labels', 'recordings', 'artist-credits');
@@ -32,14 +35,13 @@ try {
         $result = new Release($release, $brainz);
         $title = $result->title;
         $date = $result->date;
-        $artist_names = array_map(fn($artist) => $artist->name, $result->artists);
-        $labels = array_map(fn($label) => $label->name, $result->labels);
-        $label_names = implode(", ", $labels);
+        $artistNames = Artist::arrayToString($result->artists);
+        $labels = Label::arrayToString($result->labels);
         $id = $result->id;
         $url = $path . "/$id";
         $workflow->item()
-            ->title("$title - $date - $label_names")
-            ->subtitle(implode(", ", $artist_names))
+            ->title("$title - $date - $labels")
+            ->subtitle($artistNames)
             ->arg($url)
             ->autocomplete($title)
             ->copy($title)
