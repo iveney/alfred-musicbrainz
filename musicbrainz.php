@@ -126,6 +126,7 @@ if ($type === "artist") {
             ->autocomplete($releaseTitle)
             ->copy($title)
             ->icon(ICON)
+            ->cmd(fn($mod) => $mod->subtitle("Score: " . $result->getScore())) // Cmd to show score
             ->action($id)
             ->quickLookUrl($url);
     }
@@ -164,6 +165,7 @@ if ($type === "artist") {
             ->autocomplete($title)
             ->copy($title)
             ->icon(ICON)
+            ->cmd(fn($mod) => $mod->subtitle("Score: " . $result->getScore())) // Cmd to show score
             ->action($id)
             ->quickLookUrl($url);
     }
